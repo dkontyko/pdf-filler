@@ -8,8 +8,8 @@ PATH_TO_PDFTK = ENV['PATH_TO_PDFTK'] || (File.exist?('/usr/local/bin/pdftk') ? '
 
 class PdfFiller
 
-  #path to the pdftk binary
-  #http://www.pdflabs.com/docs/install-pdftk/
+  # path to the pdftk binary
+  # http://www.pdflabs.com/docs/install-pdftk/
 
   # regular expression to determine if fillable or non-fillable field
   # validates 1,2 and 1,2,3
@@ -35,10 +35,10 @@ class PdfFiller
     filled_pdf = Tempfile.new( ['pdf', '.pdf'] )
     
     data = urldecode_keys data
-    #Fill fillable fields (step 1)
+    # Fill fillable fields (step 1)
     @pdftk.fill_form source_pdf.path, step_1_result.path, data.find_all{ |key, value| !key[KEY_REGEX] }
     
-    #Fill non-fillable fields (returning filled pdf)
+    # Fill non-fillable fields (returning filled pdf)
     Prawn::Document.generate filled_pdf.path, :template => step_1_result.path do |pdf|
       pdf.font("Helvetica", :size=> 10)
       fields = data.find_all { |key, value| key[KEY_REGEX] }
@@ -53,7 +53,7 @@ class PdfFiller
   
   # Return a hash of all fields in a given PDF
   def get_fields(url)
-    #note: we're talking to PDFTK directly here
+    # note: we're talking to PDFTK directly here
     # the native @pdftk.get_field_names doesn't seem to work on many government PDFs
     fields = @pdftk.call_pdftk( open( URI.escape( url ) ).path, 'dump_data_fields' )
     fields = fields.split("---")
