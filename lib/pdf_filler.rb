@@ -15,10 +15,10 @@ class PdfFiller
   # validates 1,2 and 1,2,3
   KEY_REGEX = /^(?<x>[0-9]+),(?<y>[0-9]+)(,(?<page>[0-9]+))?$/
 
-  def urldecode_keys hash
-    output = Hash.new
+  def urldecode_keys(hash)
+    output = {}
     hash.each do |key, value|
-      output[ URI.unescape(key) ] = value
+      output[URI.unescape(key)] = value
     end
     output
   end
@@ -39,13 +39,13 @@ class PdfFiller
     @pdftk.fill_form source_pdf.path, step_1_result.path, (data.find_all { |key, value| !key[KEY_REGEX] })
 
     # Fill non-fillable fields (returning filled pdf)
-    Prawn::Document.generate filled_pdf.path, :template => step_1_result.path do |pdf|
-      pdf.font('Helvetica', :size=> 10)
+    Prawn::Document.generate filled_pdf.path, template: step_1_result.path do |pdf|
+      pdf.font('Helvetica', size: 10)
       fields = data.find_all { |key, value| key[KEY_REGEX] }
       fields.each do |key, value|
         at = key.match(KEY_REGEX)
         pdf.go_to_page at[:page].to_i || 1
-        pdf.draw_text value, :at => [ at[ :x ].to_i, at[:y].to_i ]
+        pdf.draw_text value, at: [ at[ :x ].to_i, at[:y].to_i ]
       end
     end
     filled_pdf
@@ -60,7 +60,7 @@ class PdfFiller
     @output = []
     fields.each do |field|
       @hash = {}
-      field.split("\n").each() do |line|
+      field.split("\n").each do |line|
         next if line == ''
 
         key, value = line.split(': ')
